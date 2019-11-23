@@ -1,5 +1,16 @@
 # node-disnetworkclient
-Example implementations for UDP client/server exchanging DIS (Distributed Interactive Simulation) packages
+Example implementations for UDP client/server exchanging DIS (Distributed Interactive Simulation) packages using [open-dis-javascript](https://github.com/open-dis/open-dis-javascript) with node.js
+
+This examples may help as a starting-point to use open-dis-javascript yourself,
+giving a basic introduction, in how to use the DIS PDUs, and handling the different
+Buffers
+
+## Dependencies
+
+Before starting, please install the following software:
+
+ - [node.js](https://nodejs.org/en/)
+ - [git](https://git-scm.com/downloads)
 
 ## Installation
 
@@ -47,12 +58,12 @@ Marking
 ```
 
 
-#Writing an own client
+# Writing an own client
 
 See example implementation in [dis-udpclient.js](./src/dis-udpclient.js) as a starting point
 
 
-#Writing an own server
+# Writing an own server
 
 
 See example implementation in [dis-udpserver.js](./src/dis-udpserver.js) as a starting point
