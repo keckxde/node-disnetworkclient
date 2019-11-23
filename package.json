@@ -4,7 +4,8 @@
   "description": "Example implementations for UDP client/server exchanging DIS (Distributed Interactive Simulation) packages",
   "main": "src/dis-udpserver.js",
   "scripts": {
-    "test": "node src/dis-udpserver.js"
+    "server": "node src/dis-udpserver.js",
+    "client": "node src/dis-udpclient.js"
   },
   "repository": {
     "type": "git",
