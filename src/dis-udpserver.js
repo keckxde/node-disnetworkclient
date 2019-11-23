@@ -1,8 +1,10 @@
 const dgram = require('dgram');
-var argv = require('yargs').argv;
-
-const server = dgram.createSocket('udp4');
+const argv = require('yargs').argv;
 const dis = require("open-dis")
+const DISUtils = require('./DISUtils');
+
+var utils = new DISUtils();
+
 
 const DEFAULT_PORT = 3000
 
@@ -10,6 +12,9 @@ const DEFAULT_PORT = 3000
  * Read port as commandline arguments - or take the default if not given:
  */
 var port = argv.port || DEFAULT_PORT
+
+
+var server = dgram.createSocket('udp4');
 
 /**
  * Messagehandler
@@ -20,7 +25,7 @@ server.on('message', (msg, rinfo) => {
 
   try
   {
-    var disMessage = createDISObjectFromBuffer(msg);
+    var disMessage = utils.DISObjectFromBuffer(msg);
     switch(disMessage.pduType)
     {
         case 1: // EntityState PDU:
@@ -28,7 +33,7 @@ server.on('message', (msg, rinfo) => {
             var location = disMessage.entityLocation;
             var marking  = disMessage.marking.getMarking();
 
-            console.log("Got EntityState:", entityID, "Location", location, "Marking", marking )
+            console.log("Got EntityState:", entityID, "Location", location, "Marking: \'" + marking + "\'"             )
            
             break;
         case 20: // Data PDU:
@@ -64,56 +69,3 @@ server.on('listening', () => {
  * Actually start listening on port:
  */
 server.bind(port);
-
-
-/**
- * createDISObjectFromBuffer
- *  1.) Create an ArrayBuffer - OBject from Buffer - Object
- *  2.) Create a DisPduFactory
- *  3.) Parse Arraybuffer & Create PDU using pdufactory 
- * @param buffer Javascript buffer object - used for networking
- * @return disMessage 
- */
-function createDISObjectFromBuffer(buffer)
-{
-    let arrayBuffer = toArrayBuffer(buffer)
-
-    var pduFactory = new dis.PduFactory();
-    var disMessage = pduFactory.createPdu(arrayBuffer) 
-    return disMessage 
-}
-
-/**
- * DISPduToBuffer
- * Create an Buffer Object from DIS-PDU to be used for sending over networks
- * @param disPduObject Javascript buffer object - used for networking
- * @return Binary Buffer Object
- */
-function DISPduToBuffer(disPduObject) {
-    var o_ResultBuffer = undefined;
-    /**
-     * Initialize ArrayBuffer & DIS-Outputstream to be used for the encoding
-     */
-    var ab = new ArrayBuffer(1500);
-    var outputstream = new dis.OutputStream(ab)
-    // Encode the DIS Object -> binary buffer
-    disPduObject.encodeToBinary(outputstream);
-    // Create Buffer from ArrayBuffer
-    o_ResultBuffer = Buffer.from(ab);
-    return o_ResultBuffer;
-}
-
-/**
- * toArrayBuffer
- *  1.) Create an ArrayBuffer - Object from Buffer - Object
- * @param buffer Javascript buffer object - used for networking
- * @return ArrayBuffer Object (used by DIS Implementation) 
- */
-function toArrayBuffer(buf) {
-    var ab = new ArrayBuffer(buf.length);
-    var view = new Uint8Array(ab);
-    for (var i = 0; i < buf.length; ++i) {
-        view[i] = buf[i];
-    }
-    return ab;
-}
